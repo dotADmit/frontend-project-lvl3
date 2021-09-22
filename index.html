@@ -5,21 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rss agregator</title>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
-	<section class="container-fluid bg-dark text-white">
-		<div class="row pt-4">
-			<div class="col">
-				<h1>RSS агрегатор</h1>
-				<p>Начните читать RSS сегодня! Это легко, это красиво.</p>
-				<label class="text-muted small">
-					<input type="text" class="form-control input-rss" placeholder="Ссылка RSS">
-					</label>
-					<button type="button" class="btn btn-primary">Добавить</button>
-					<p class="text-muted">Пример: https://ru.hexlet.io/lessons.rss</p>
-			</div>
-		</div>
-	</section>
+  <main class="flex-grow-1">
+    <section class="container-fluid bg-dark text-white p-5">
+      <div class="row">
+        <div class="col-md-10 col-lg-8 mx-auto">
+          <h1 class="display-3 mb-0">RSS агрегатор</h1>
+          <p class="lead">Начните читать RSS сегодня! Это легко, это красиво.</p>
+          <form action="/" class="text-body">
+            <div class="row">
+              <div class="col">
+                <div class="form-floating">
+                  <input id="url-input" autofocus required name="url" aria-label="url" class="form-control" placeholder="ссылка RSS" autocomplete="off">
+                  <label for="url-input">Ссылка RSS</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <button type="submit" aria-label="add" class="h-100 btn btn-lg btn-primary px-5">Добавить</button>
+              </div>
+            </div>
+        </form>
+        <p class="mt-2 mb-0 text-muted">Пример: https://ru.hexlet.io/lessons.rss</p>
+        <p class="feedback m-0 position-absolute small text-danger"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="container-fluid p-5">
+      <div class="row">
+        <div class="col-md-10 col-lg-8 order-1 mx-auto posts">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa asperiores, esse sit atque, impedit expedita reprehenderit autem repudiandae ad excepturi eveniet nisi explicabo earum corrupti, ex repellendus consequatur nam aliquam.</div>
+        <div class="col-md-10 col-lg-4 mx-auto order-0 order-lg-1 feeds">Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas quae aliquid enim iusto unde libero laboriosam sed quibusdam magnam minus voluptatum cupiditate deleniti ut nulla, necessitatibus officia esse placeat aliquam.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer border-top py-3 mt-5 bg-light">
+    <div class="text-center">
+      created by <a href="https://portfolio-annwin.surge.sh" target="_blank">dotADmit</a>
+    </div>
+  </footer>
 
 </body>
 </html>
