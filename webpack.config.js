@@ -13,6 +13,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
+      favicon: './src/img/feed-icon.svg',
       template: 'index.html',
     }),
   ],
