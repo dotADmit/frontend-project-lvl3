@@ -13,8 +13,7 @@ const buildCard = (nameHeader) => {
   const cardUl = createElement('ul', 'list-group');
 
   cardBody.append(cardBodyHeader);
-  card.append(cardBody);
-  card.append(cardUl);
+  card.append(cardBody, cardUl);
 
   return card;
 };
@@ -28,30 +27,30 @@ const buildFeedLi = (title, description) => {
   return cardLi;
 };
 
-const buildPostLi = (title, link) => {
+const buildPostLi = (title, link, i18Instance) => {
   const cardLi = createElement('li', 'list-group-item d-flex justify-content-between');
   const cardLink = createElement('a', 'fw-bold', title);
   cardLink.setAttribute('href', link);
   cardLink.setAttribute('target', '_blank');
-  const cardButton = createElement('button', 'btn btn-outline-primary', 'Просмотр');
+  const cardButton = createElement('button', 'btn btn-outline-primary', i18Instance.t('buttons.preview'));
   cardLi.append(cardLink, cardButton);
 
   return cardLi;
 };
 
-const renderFeeds = (elements, value, prevValue) => {
-  if (prevValue.length === 0) elements.feeds.append(buildCard('Фиды'));
+const renderFeeds = (elements, value, prevValue, i18Instance) => {
+  if (prevValue.length === 0) elements.feeds.append(buildCard(i18Instance.t('feeds')));
   const cardUl = elements.feeds.querySelector('.card ul');
   const { title, description } = value[0];
   cardUl.prepend(buildFeedLi(title, description));
 };
 
-const renderPosts = (elements, value, prevValue) => {
-  if (prevValue.length === 0) elements.posts.append(buildCard('Посты'));
+const renderPosts = (elements, value, prevValue, i18Instance) => {
+  if (prevValue.length === 0) elements.posts.append(buildCard(i18Instance.t('posts')));
   const cardUl = elements.posts.querySelector('.card ul');
   cardUl.innerHTML = '';
   value.forEach(({ title, link }) => {
-    const li = buildPostLi(title, link);
+    const li = buildPostLi(title, link, i18Instance);
     cardUl.append(li);
 
     const liLink = li.querySelector('a');
@@ -82,7 +81,7 @@ const handleProcessState = (elements, i18Instance, value) => {
       break;
 
     default:
-      throw new Error(`Неизвестный процесс: ${value}`);
+      throw new Error(`${i18Instance.t('errors.unknown_process')}: ${value}`);
   }
 };
 
@@ -103,11 +102,11 @@ export default (elements, i18Instance) => (path, value, prevValue) => {
       break;
 
     case 'feeds':
-      renderFeeds(elements, value, prevValue);
+      renderFeeds(elements, value, prevValue, i18Instance);
       break;
 
     case 'posts':
-      renderPosts(elements, value, prevValue);
+      renderPosts(elements, value, prevValue, i18Instance);
       break;
 
     default:

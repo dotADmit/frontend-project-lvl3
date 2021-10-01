@@ -1,13 +1,25 @@
 import getNextId from './getId.js';
 
-const parseRssToObj = (rss) => {
-  const titleEl = rss.querySelector('title');
-  const descriptionEl = rss.querySelector('description');
-  const linkEl = rss.querySelector('link');
-  const children = rss.querySelectorAll('item');
+const parseRssToXml = (rss) => {
+  const parser = new DOMParser();
+  const dataXml = parser.parseFromString(rss.data?.contents || rss.data, 'text/xml');
+
+  if (dataXml.querySelector('parsererror')) {
+    throw new Error('parseError');
+  }
+
+  return dataXml;
+};
+
+const parseXmlToObj = (xml) => {
+  const channelEl = xml.querySelector('channel');
+  const titleEl = xml.querySelector('title');
+  const descriptionEl = xml.querySelector('description');
+  const linkEl = xml.querySelector('link');
+  const children = xml.querySelectorAll('item');
   const posts = [];
 
-  children.forEach((post) => posts.push(parseRssToObj(post)));
+  children.forEach((post) => posts.push(parseXmlToObj(post)));
 
   const result = {
     title: titleEl.textContent,
@@ -15,20 +27,31 @@ const parseRssToObj = (rss) => {
     link: linkEl.textContent,
   };
 
-  if (posts.length > 0) result.posts = posts;
+  // is feed?
+  if (channelEl) result.posts = posts;
 
   return result;
 };
 
-export default (response) => {
-  const parser = new DOMParser();
-  const data = parser.parseFromString(response.data?.contents || response.data, 'text/xml');
+const parseUpdates = (response) => {
+  const responseInXml = parseRssToXml(response);
+  const parsingData = parseXmlToObj(responseInXml);
 
-  if (data.querySelector('parsererror')) {
-    throw new Error('parseError');
-  }
+  const feedTitle = parsingData.title;
 
-  const parsingData = parseRssToObj(data);
+  const posts = parsingData.posts.map((post) => ({
+    title: post.title,
+    description: post.description,
+    link: post.link,
+  }));
+
+  return { feedTitle, posts };
+};
+
+const parseFeed = (response) => {
+  const responseInXml = parseRssToXml(response);
+  const parsingData = parseXmlToObj(responseInXml);
+
   const feedId = getNextId('feed');
   const feed = {
     id: feedId,
@@ -46,3 +69,5 @@ export default (response) => {
 
   return { feed, posts };
 };
+
+export { parseUpdates, parseFeed };

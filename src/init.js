@@ -5,8 +5,9 @@ import onChange from 'on-change';
 import i18next from 'i18next';
 import axios from 'axios';
 import resources from './locales/index.js';
-import parse from './parser.js';
+import parseFeed from './parser.js';
 import render from './view.js';
+import getNewPosts from './updatePosts.js';
 
 const init = () => {
   const i18Instance = i18next.createInstance();
@@ -59,7 +60,6 @@ const init = () => {
         })
         .then((value) => {
           watchedState.processState = 'sending';
-
           watchedState.urlInputValid = true;
           return axios.get(`${proxy}${value}`);
         })
@@ -67,12 +67,13 @@ const init = () => {
           watchedState.urlInputValid = true;
           watchedState.processState = 'sent';
 
-          const { feed, posts } = parse(response);
+          const { feed, posts } = parseFeed(response);
+          watchedState.processState = 'sentSuccess';
           watchedState.feeds = [feed, ...state.feeds];
           watchedState.posts = [...posts, ...state.posts];
+          watchedState.addedUrls.push(userUrl);
 
-          watchedState.processState = 'sentSuccess';
-          state.addedUrls.push(userUrl);
+          getNewPosts(state, watchedState, proxy);
         })
         .catch((error) => {
           console.log(error.message);
@@ -80,9 +81,9 @@ const init = () => {
           if (error.message === 'validation') return;
           if (error.message === 'parseError') {
             watchedState.error = [i18Instance.t('errors.not_valid_rss')];
-          } else {
-            watchedState.error = [i18Instance.t('errors.network')];
+            return;
           }
+          watchedState.error = [i18Instance.t('errors.network')];
         });
     });
   });

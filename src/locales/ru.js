@@ -5,8 +5,14 @@ export default {
       not_unique: 'RSS уже существует',
       not_valid_rss: 'Ресурс не содержит валидный RSS',
       network: 'Проблемы сети. Поробуйте снова',
+      unknown_process: 'Неизвестный процесс',
+    },
+    buttons: {
+      preview: 'Просмотр',
     },
     loading: 'Идём за постами',
     successful_download: 'RSS успешно загружен',
+    feeds: 'Фиды',
+    posts: 'Посты',
   },
 };
