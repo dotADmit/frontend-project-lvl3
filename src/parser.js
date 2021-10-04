@@ -1,4 +1,4 @@
-import getNextId from './getId.js';
+import getNextId from './getNextId.js';
 
 const parseRssToXml = (rss) => {
   const parser = new DOMParser();

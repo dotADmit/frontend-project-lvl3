@@ -18,7 +18,7 @@ const buildCard = (nameHeader) => {
   return card;
 };
 
-const buildFeedLi = (title, description) => {
+const buildFeedListItem = (title, description) => {
   const cardLi = createElement('li', 'list-group-item');
   const liHeader = createElement('h3', 'h6', title);
   const p = createElement('p', 'small text-black-50', description);
@@ -27,34 +27,59 @@ const buildFeedLi = (title, description) => {
   return cardLi;
 };
 
-const buildPostLi = (title, link, i18Instance) => {
-  const cardLi = createElement('li', 'list-group-item d-flex justify-content-between');
-  const cardLink = createElement('a', 'fw-bold', title);
-  cardLink.setAttribute('href', link);
+const buildPostListItem = (elements, post, i18Instance) => {
+  const card = createElement('li', 'list-group-item d-flex justify-content-between');
+  const cardLink = createElement('a', 'fw-bold', post.title);
+  cardLink.setAttribute('href', post.link);
   cardLink.setAttribute('target', '_blank');
-  const cardButton = createElement('button', 'btn btn-outline-primary', i18Instance.t('buttons.preview'));
-  cardLi.append(cardLink, cardButton);
+  cardLink.setAttribute('data-id', post.id);
+  // const cardButton =
+  // createElement('button', 'btn btn-outline-primary', i18Instance.t('buttons.preview'));
+  // cardButton.setAttribute('type', 'button');
+  // cardButton.setAttribute('data-bs-toogle', 'modal');
+  // cardButton.setAttribute('data-bs-target', '#exampleModal');
+  card.append(cardLink);
+  const btnBootstrap = `
+    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
+      ${i18Instance.t('buttons.preview')}
+    </button>
+  `;
+  card.innerHTML += btnBootstrap;
 
-  return cardLi;
+  const cardButton = card.querySelector('button');
+  const cardTitle = card.querySelector('a');
+
+  cardTitle.addEventListener('click', () => {
+    cardTitle.className = 'fw-normal link-secondary';
+  });
+
+  cardButton.addEventListener('click', () => {
+    const modalTitle = elements.modal.querySelector('.modal-title');
+    const modalBody = elements.modal.querySelector('.modal-body');
+    const modalLink = elements.modal.querySelector('a');
+    modalTitle.textContent = post.title;
+    modalBody.textContent = post.description;
+    modalLink.setAttribute('href', post.link);
+    cardTitle.className = 'fw-normal link-secondary';
+  });
+
+  return card;
 };
 
 const renderFeeds = (elements, value, prevValue, i18Instance) => {
   if (prevValue.length === 0) elements.feeds.append(buildCard(i18Instance.t('feeds')));
   const cardUl = elements.feeds.querySelector('.card ul');
   const { title, description } = value[0];
-  cardUl.prepend(buildFeedLi(title, description));
+  cardUl.prepend(buildFeedListItem(title, description));
 };
 
 const renderPosts = (elements, value, prevValue, i18Instance) => {
   if (prevValue.length === 0) elements.posts.append(buildCard(i18Instance.t('posts')));
   const cardUl = elements.posts.querySelector('.card ul');
   cardUl.innerHTML = '';
-  value.forEach(({ title, link }) => {
-    const li = buildPostLi(title, link, i18Instance);
-    cardUl.append(li);
-
-    const liLink = li.querySelector('a');
-    liLink.addEventListener('click', () => { liLink.classList.add('link-secondary'); });
+  value.forEach((postObj) => {
+    const postElement = buildPostListItem(elements, postObj, i18Instance);
+    cardUl.append(postElement);
   });
 };
 
@@ -107,6 +132,9 @@ export default (elements, i18Instance) => (path, value, prevValue) => {
 
     case 'posts':
       renderPosts(elements, value, prevValue, i18Instance);
+      break;
+
+    case 'veiwedPostsId':
       break;
 
     default:

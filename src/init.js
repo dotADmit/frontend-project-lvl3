@@ -1,13 +1,13 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './style.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
 import * as yup from 'yup';
 import onChange from 'on-change';
 import i18next from 'i18next';
 import axios from 'axios';
 import resources from './locales/index.js';
-import parseFeed from './parser.js';
+import { parseFeed } from './parser.js';
 import render from './view.js';
-import getNewPosts from './updatePosts.js';
+import updatePosts from './updatePosts.js';
 
 const init = () => {
   const i18Instance = i18next.createInstance();
@@ -17,11 +17,14 @@ const init = () => {
     resources,
   }).then(() => {
     yup.setLocale({
-      mixed: { notOneOf: i18Instance.t('errors.not_unique') },
+      mixed: {
+        notOneOf: i18Instance.t('errors.not_unique'),
+        required: i18Instance.t('errors.required'),
+      },
       string: { url: i18Instance.t('errors.invalid_url') },
     });
 
-    const schema = yup.string().url();
+    const schema = yup.string().required().url();
     const validateURL = (field, addedLinks) => schema.notOneOf(addedLinks).validate(field);
 
     const state = {
@@ -31,6 +34,7 @@ const init = () => {
       error: [],
       feeds: [],
       posts: [],
+      viewedPostsId: [],
     };
 
     const proxy = 'https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=';
@@ -42,6 +46,7 @@ const init = () => {
       submitButton: document.querySelector('button[type="submit"]'),
       feeds: document.querySelector('.feeds'),
       posts: document.querySelector('.posts'),
+      modal: document.querySelector('.modal'),
     };
 
     const watchedState = onChange(state, render(elements, i18Instance));
@@ -73,7 +78,7 @@ const init = () => {
           watchedState.posts = [...posts, ...state.posts];
           watchedState.addedUrls.push(userUrl);
 
-          getNewPosts(state, watchedState, proxy);
+          updatePosts(state, watchedState, proxy);
         })
         .catch((error) => {
           console.log(error.message);

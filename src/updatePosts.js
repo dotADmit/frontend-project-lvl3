@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { parseUpdates } from './parser.js';
-import getNextId from './getId.js';
+import getNextId from './getNextId.js';
 
 const getFeedIdByTitle = (feeds, feedTitle) => {
   const feed = feeds.find(({ title }) => title === feedTitle);
   return feed.id;
 };
 
-const getNewPosts = (state, watchedState, proxy) => {
+const updatePosts = (state, watchedState, proxy) => {
   setTimeout(() => {
     const addedPostslLinks = state.posts.map((post) => post.link);
     const promises = state.addedUrls.map((url) => axios.get(`${proxy}${url}`));
@@ -29,8 +29,8 @@ const getNewPosts = (state, watchedState, proxy) => {
       });
     });
 
-    getNewPosts(state, watchedState, proxy);
+    updatePosts(state, watchedState, proxy);
   }, 5000);
 };
 
-export default getNewPosts;
+export default updatePosts;
