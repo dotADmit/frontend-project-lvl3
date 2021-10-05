@@ -19,47 +19,34 @@ const buildCard = (nameHeader) => {
 };
 
 const buildFeedListItem = (title, description) => {
-  const cardLi = createElement('li', 'list-group-item');
-  const liHeader = createElement('h3', 'h6', title);
-  const p = createElement('p', 'small text-black-50', description);
-  cardLi.append(liHeader, p);
+  const el = createElement('li', 'list-group-item');
+  const elHeader = createElement('h3', 'h6', title);
+  const elText = createElement('p', 'small text-black-50', description);
+  el.append(elHeader, elText);
 
-  return cardLi;
+  return el;
 };
 
 const buildPostListItem = (elements, post, i18Instance) => {
   const card = createElement('li', 'list-group-item d-flex justify-content-between');
-  const cardLink = createElement('a', 'fw-bold', post.title);
-  cardLink.setAttribute('href', post.link);
-  cardLink.setAttribute('target', '_blank');
-  cardLink.setAttribute('data-id', post.id);
-  // const cardButton =
-  // createElement('button', 'btn btn-outline-primary', i18Instance.t('buttons.preview'));
-  // cardButton.setAttribute('type', 'button');
-  // cardButton.setAttribute('data-bs-toogle', 'modal');
-  // cardButton.setAttribute('data-bs-target', '#exampleModal');
-  card.append(cardLink);
-  const btnBootstrap = `
-    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
-      ${i18Instance.t('buttons.preview')}
-    </button>
-  `;
-  card.innerHTML += btnBootstrap;
 
-  const cardButton = card.querySelector('button');
-  const cardTitle = card.querySelector('a');
+  const cardTitle = createElement('a', 'fw-bold', post.title);
+  cardTitle.setAttribute('href', post.link);
+  cardTitle.setAttribute('target', '_blank');
+  cardTitle.setAttribute('data-id', post.id);
 
-  cardTitle.addEventListener('click', () => {
-    cardTitle.className = 'fw-normal link-secondary';
-  });
+  const cardButton = createElement('button', 'btn btn-outline-primary', i18Instance.t('buttons.preview'));
+  cardButton.setAttribute('data-bs-toggle', 'modal');
+  cardButton.setAttribute('data-bs-target', '#reviewModal');
+
+  card.append(cardTitle, cardButton);
+
+  cardTitle.addEventListener('click', () => { cardTitle.className = 'fw-normal link-secondary'; });
 
   cardButton.addEventListener('click', () => {
-    const modalTitle = elements.modal.querySelector('.modal-title');
-    const modalBody = elements.modal.querySelector('.modal-body');
-    const modalLink = elements.modal.querySelector('a');
-    modalTitle.textContent = post.title;
-    modalBody.textContent = post.description;
-    modalLink.setAttribute('href', post.link);
+    elements.modal.title.textContent = post.title;
+    elements.modal.body.textContent = post.description;
+    elements.modal.btnViewAll.setAttribute('href', post.link);
     cardTitle.className = 'fw-normal link-secondary';
   });
 
@@ -67,19 +54,28 @@ const buildPostListItem = (elements, post, i18Instance) => {
 };
 
 const renderFeeds = (elements, value, prevValue, i18Instance) => {
-  if (prevValue.length === 0) elements.feeds.append(buildCard(i18Instance.t('feeds')));
-  const cardUl = elements.feeds.querySelector('.card ul');
+  if (prevValue.length === 0) {
+    const card = buildCard(i18Instance.t('feeds'));
+    elements.feeds.append(card);
+    elements.feeds.list = elements.feeds.querySelector('.card ul');
+  }
+
   const { title, description } = value[0];
-  cardUl.prepend(buildFeedListItem(title, description));
+  const feedListItem = buildFeedListItem(title, description);
+  elements.feeds.list.prepend(feedListItem);
 };
 
 const renderPosts = (elements, value, prevValue, i18Instance) => {
-  if (prevValue.length === 0) elements.posts.append(buildCard(i18Instance.t('posts')));
-  const cardUl = elements.posts.querySelector('.card ul');
-  cardUl.innerHTML = '';
+  if (prevValue.length === 0) {
+    const card = buildCard(i18Instance.t('posts'));
+    elements.posts.append(card);
+    elements.posts.list = elements.posts.querySelector('.card ul');
+  }
+
+  elements.posts.list.innerHTML = '';
   value.forEach((postObj) => {
     const postElement = buildPostListItem(elements, postObj, i18Instance);
-    cardUl.append(postElement);
+    elements.posts.list.append(postElement);
   });
 };
 
@@ -93,7 +89,7 @@ const handleProcessState = (elements, i18Instance, value) => {
       elements.feedback.textContent = i18Instance.t('loading');
       break;
 
-    case 'sent':
+    case 'filling':
       elements.submitButton.disabled = false;
       elements.input.disabled = false;
       break;

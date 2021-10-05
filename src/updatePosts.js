@@ -14,8 +14,8 @@ const updatePosts = (state, watchedState, proxy) => {
     Promise.all(promises).then((contents) => {
       contents.forEach((content) => {
         const { feedTitle, posts } = parseUpdates(content);
-        console.log(posts);
         const contentNewPosts = posts.filter(({ link }) => !addedPostslLinks.includes(link));
+
         if (contentNewPosts.length === 0) return;
 
         const feedId = getFeedIdByTitle(state.feeds, feedTitle);
@@ -24,7 +24,6 @@ const updatePosts = (state, watchedState, proxy) => {
           id: getNextId('post'),
           ...post,
         }));
-        console.log(postsWithId);
         watchedState.posts = [...postsWithId, ...state.posts];
       });
     });

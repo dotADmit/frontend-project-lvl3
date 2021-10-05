@@ -1,7 +1,7 @@
 export default {
   translation: {
     errors: {
-      required: 'Ссылка RSS - обязательное поле.',
+      required: 'Не должно быть пустым',
       invalid_url: 'Ссылка должна быть валидным URL',
       not_unique: 'RSS уже существует',
       not_valid_rss: 'Ресурс не содержит валидный RSS',
