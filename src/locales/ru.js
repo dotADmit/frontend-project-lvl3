@@ -5,7 +5,7 @@ export default {
       invalid_url: 'Ссылка должна быть валидным URL',
       not_unique: 'RSS уже существует',
       not_valid_rss: 'Ресурс не содержит валидный RSS',
-      network: 'Проблемы сети. Поробуйте снова',
+      network: 'Ошибка сети',
       unknown_process: 'Неизвестный процесс',
     },
     buttons: {
