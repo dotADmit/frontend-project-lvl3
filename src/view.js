@@ -33,32 +33,27 @@ const buildPostListItem = (elements, post, i18Instance) => {
   const cardTitle = createElement('a', 'fw-bold', post.title);
   cardTitle.setAttribute('href', post.link);
   cardTitle.setAttribute('target', '_blank');
-  cardTitle.setAttribute('data-id', post.id);
+  cardTitle.setAttribute('data-post-id', post.id);
 
   const cardButton = createElement('button', 'btn btn-outline-primary', i18Instance.t('buttons.preview'));
+  cardButton.setAttribute('type', 'button');
   cardButton.setAttribute('data-bs-toggle', 'modal');
   cardButton.setAttribute('data-bs-target', '#reviewModal');
+  cardButton.setAttribute('data-post-id', post.id);
 
   card.append(cardTitle, cardButton);
-
-  cardTitle.addEventListener('click', () => { cardTitle.className = 'fw-normal link-secondary'; });
-
-  cardButton.addEventListener('click', () => {
-    elements.modal.title.textContent = post.title;
-    elements.modal.body.textContent = post.description;
-    elements.modal.btnViewAll.setAttribute('href', post.link);
-    cardTitle.className = 'fw-normal link-secondary';
-  });
 
   return card;
 };
 
+const renderBlankCard = (elements, elementName, cardTitle) => {
+  const card = buildCard(cardTitle);
+  elements[elementName].append(card);
+  elements[elementName].list = elements[elementName].querySelector('.card ul');
+};
+
 const renderFeeds = (elements, value, prevValue, i18Instance) => {
-  if (prevValue.length === 0) {
-    const card = buildCard(i18Instance.t('feeds'));
-    elements.feeds.append(card);
-    elements.feeds.list = elements.feeds.querySelector('.card ul');
-  }
+  if (prevValue.length === 0) renderBlankCard(elements, 'feeds', i18Instance.t('feeds'));
 
   const { title, description } = value[0];
   const feedListItem = buildFeedListItem(title, description);
@@ -66,17 +61,31 @@ const renderFeeds = (elements, value, prevValue, i18Instance) => {
 };
 
 const renderPosts = (elements, value, prevValue, i18Instance) => {
-  if (prevValue.length === 0) {
-    const card = buildCard(i18Instance.t('posts'));
-    elements.posts.append(card);
-    elements.posts.list = elements.posts.querySelector('.card ul');
-  }
+  if (prevValue.length === 0) renderBlankCard(elements, 'posts', i18Instance.t('posts'));
 
-  elements.posts.list.innerHTML = '';
+  const addedPostsId = prevValue.map(({ id }) => id);
   value.forEach((postObj) => {
+    if (addedPostsId.includes(postObj.id)) return;
+
     const postElement = buildPostListItem(elements, postObj, i18Instance);
-    elements.posts.list.append(postElement);
+    elements.posts.list.prepend(postElement);
   });
+};
+
+const renderViewedPosts = (elements, value) => {
+  const postslinks = elements.posts.list.querySelectorAll('a');
+  postslinks.forEach((link) => {
+    const id = parseInt(link.dataset.postId, 10);
+    if (value.includes(id)) {
+      link.className = 'fw-normal link-secondary';
+    }
+  });
+};
+
+const updateModal = (modal, { title, description, link }) => {
+  modal.title.textContent = title;
+  modal.body.textContent = description;
+  modal.btnViewAll.setAttribute('href', link);
 };
 
 const handleProcessState = (elements, i18Instance, value) => {
@@ -106,7 +115,7 @@ const handleProcessState = (elements, i18Instance, value) => {
   }
 };
 
-export default (elements, i18Instance) => (path, value, prevValue) => {
+const render = (elements, i18Instance) => (path, value, prevValue) => {
   switch (path) {
     case 'error':
       elements.feedback.classList.add('text-danger');
@@ -130,10 +139,13 @@ export default (elements, i18Instance) => (path, value, prevValue) => {
       renderPosts(elements, value, prevValue, i18Instance);
       break;
 
-    case 'veiwedPostsId':
+    case 'viewedPostsId':
+      renderViewedPosts(elements, value);
       break;
 
     default:
       break;
   }
 };
+
+export { render, updateModal };

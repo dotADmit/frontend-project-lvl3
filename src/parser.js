@@ -28,7 +28,7 @@ const parseXmlToObj = (xml) => {
   };
 
   // is feed?
-  if (channelEl) result.posts = posts;
+  if (channelEl) result.posts = posts.reverse();
 
   return result;
 };

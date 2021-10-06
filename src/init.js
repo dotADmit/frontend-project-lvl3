@@ -4,11 +4,11 @@ import i18next from 'i18next';
 import app from './app.js';
 import resources from './locales/index.js';
 
-const init = () => {
+export default () => {
   const i18Instance = i18next.createInstance();
   i18Instance.init({
     lng: 'ru',
-    debug: true,
+    // debug: true,
     resources,
   }).then(() => {
     const state = {
@@ -20,8 +20,6 @@ const init = () => {
       posts: [],
       viewedPostsId: [],
     };
-
-    const proxy = 'https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=';
 
     const elements = {
       form: document.querySelector('form'),
@@ -37,8 +35,6 @@ const init = () => {
       },
     };
 
-    app(state, elements, i18Instance, proxy);
+    app(state, elements, i18Instance);
   });
 };
-
-export default init;

@@ -2,10 +2,11 @@ import * as yup from 'yup';
 import onChange from 'on-change';
 import axios from 'axios';
 import { parseFeed } from './parser.js';
-import render from './view.js';
+import { render, updateModal } from './view.js';
 import updatePosts from './updatePosts.js';
+import getProxyUrl from './proxy';
 
-export default (state, elements, i18Instance, proxy) => {
+export default (state, elements, i18Instance) => {
   yup.setLocale({
     mixed: {
       notOneOf: i18Instance.t('errors.not_unique'),
@@ -34,10 +35,10 @@ export default (state, elements, i18Instance, proxy) => {
       .then((value) => {
         watchedState.processState = 'sending';
         watchedState.urlInputValid = true;
-        return axios.get(`${proxy}${value}`);
+        return axios.get(getProxyUrl(value));
       })
       .then((response) => {
-        watchedState.urlInputValid = true;
+        // watchedState.urlInputValid = true;
         watchedState.processState = 'filling';
 
         const { feed, posts } = parseFeed(response);
@@ -58,7 +59,18 @@ export default (state, elements, i18Instance, proxy) => {
         }
         watchedState.error = [i18Instance.t('errors.network')];
       });
-
-    updatePosts(state, watchedState, proxy);
   });
+
+  elements.posts.addEventListener('click', ({ target }) => {
+    const postId = parseInt(target.dataset.postId, 10);
+    if (target.type === 'button') {
+      const currenPost = state.posts.find((post) => post.id === postId);
+      updateModal(elements.modal, currenPost);
+    }
+    if (!postId || state.viewedPostsId.includes(postId)) return;
+
+    watchedState.viewedPostsId.push(postId);
+  });
+
+  updatePosts(state, watchedState);
 };

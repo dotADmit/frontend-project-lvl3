@@ -2,7 +2,7 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "frontend-lvl-3",
-  "main": "src/index.js",
+  "main": "src/init.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
