@@ -92,8 +92,9 @@ const handleProcessState = (elements, i18Instance, value) => {
   switch (value) {
     case 'sending':
       elements.input.classList.remove('is-invalid');
-      elements.submitButton.disabled = true;
       elements.input.disabled = true;
+      elements.input.setAttribute('readonly', true);
+      elements.submitButton.disabled = true;
       elements.feedback.classList.remove('text-danger', 'text-success');
       elements.feedback.textContent = i18Instance.t('loading');
       break;
@@ -101,6 +102,7 @@ const handleProcessState = (elements, i18Instance, value) => {
     case 'filling':
       elements.submitButton.disabled = false;
       elements.input.disabled = false;
+      elements.input.removeAttribute('readonly', true);
       break;
 
     case 'sentSuccess':
@@ -108,6 +110,7 @@ const handleProcessState = (elements, i18Instance, value) => {
       elements.feedback.classList.add('text-success');
       elements.form.reset();
       elements.input.focus();
+      elements.input.removeAttribute('readonly', true);
       break;
 
     default:
