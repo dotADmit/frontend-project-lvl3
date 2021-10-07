@@ -17,14 +17,22 @@
         <div class="modal-body"></div>
         <div class="modal-footer">
           <a class="btn btn-primary view-all" href="#" target="_blank">Читать полностью</a>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="button" class="btn btn-secondary cancel" data-bs-dismiss="modal">Закрыть</button>
         </div>
       </div>
     </div>
   </div>
 
   <main class="flex-grow-1">
-    <section class="container-fluid bg-dark text-white p-5">
+    <section class="pt-0 container-fluid bg-dark bg-opacity-75 text-white p-5">
+      <div class="row pt-3">
+        <div class="col-md-11 col-lg-10 d-flex flex-row-reverse">
+          <div class="btn-group lang" role="group">
+            <button type="button" class="btn btn-info btn-sm" data-lng="ru">ru</button>
+            <button type="button" class="btn btn-outline-info btn-sm" data-lng="en">en</button>
+          </div>
+        </div>
+      </div>
       <div class="row">
         <div class="col-md-10 col-lg-8 mx-auto">
           <h1 class="display-3 mb-0">RSS агрегатор</h1>
@@ -34,7 +42,7 @@
               <div class="col">
                 <div class="form-floating">
                   <input id="url-input" autofocus required name="url" aria-label="url" class="form-control" placeholder="ссылка RSS" autocomplete="off">
-                  <label for="url-input">Ссылка RSS</label>
+                  <label class="url-label" for="url-input">Ссылка RSS</label>
                 </div>
               </div>
               <div class="col-auto">
@@ -42,7 +50,7 @@
               </div>
             </div>
         </form>
-        <p class="mt-2 mb-0 text-muted">Пример: https://ru.hexlet.io/lessons.rss</p>
+        <p class="mt-2 mb-0 text-muted example">Пример: https://ru.hexlet.io/lessons.rss</p>
         <p class="feedback m-0 position-absolute small text-danger"></p>
         </div>
       </div>

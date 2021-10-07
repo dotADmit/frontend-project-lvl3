@@ -1,23 +1,12 @@
-import * as yup from 'yup';
 import onChange from 'on-change';
 import axios from 'axios';
 import { parseFeed } from './parser.js';
 import { render, updateModal } from './view.js';
 import updatePosts from './updatePosts.js';
 import getProxyUrl from './proxy';
+import validateURL from './validator.js';
 
 export default (state, elements, i18Instance) => {
-  yup.setLocale({
-    mixed: {
-      notOneOf: i18Instance.t('errors.not_unique'),
-      required: i18Instance.t('errors.required'),
-    },
-    string: { url: i18Instance.t('errors.invalid_url') },
-  });
-
-  const schema = yup.string().required().url();
-  const validateURL = (field, addedLinks) => schema.notOneOf(addedLinks).validate(field);
-
   const watchedState = onChange(state, render(elements, i18Instance));
 
   elements.form.addEventListener('submit', (e) => {
@@ -26,7 +15,7 @@ export default (state, elements, i18Instance) => {
     const formData = new FormData(e.target);
     const userUrl = formData.get('url').trim();
 
-    validateURL(userUrl, state.addedUrls)
+    validateURL(userUrl, state.addedUrls, i18Instance)
       .catch((error) => {
         watchedState.urlInputValid = false;
         watchedState.error = error.errors;
@@ -38,7 +27,6 @@ export default (state, elements, i18Instance) => {
         return axios.get(getProxyUrl(value));
       })
       .then((response) => {
-        // watchedState.urlInputValid = true;
         watchedState.processState = 'filling';
 
         const { feed, posts } = parseFeed(response);
@@ -70,6 +58,11 @@ export default (state, elements, i18Instance) => {
     if (!postId || state.viewedPostsId.includes(postId)) return;
 
     watchedState.viewedPostsId.push(postId);
+  });
+
+  elements.lang.addEventListener('click', ({ target }) => {
+    const { lng } = target.dataset;
+    watchedState.lng = lng;
   });
 
   updatePosts(state, watchedState);

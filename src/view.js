@@ -1,3 +1,5 @@
+import updateTranslation from './updateTranslation.js';
+
 const createElement = (el, elClass, elContent = '') => {
   const element = document.createElement(el);
   element.setAttribute('class', elClass);
@@ -144,6 +146,10 @@ const render = (elements, i18Instance) => (path, value, prevValue) => {
 
     case 'viewedPostsId':
       renderViewedPosts(elements, value);
+      break;
+
+    case 'lng':
+      i18Instance.changeLanguage(value).then(() => updateTranslation(elements, i18Instance, value));
       break;
 
     default:

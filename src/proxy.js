@@ -1,4 +1,1 @@
-export default (url) => {
-  const proxyUrl = `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}&disableCache=true`;
-  return proxyUrl;
-};
+export default (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}&disableCache=true`;
